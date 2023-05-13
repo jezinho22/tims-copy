@@ -1,26 +1,41 @@
 import "./App.css";
 import axios from "axios";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Button from "./Button";
 
 function App() {
 	const [games, setGames] = useState([]);
+	const [years, setYears] = useState(["1983"]);
+
+	useEffect(() => {
+		getYears();
+	}, []);
 
 	async function getGames(endpoint) {
 		const API = `https://games-explorer.onrender.com/${endpoint}`;
 		const res = await axios.get(API);
 		setGames(res.data);
 	}
+
+	async function getYears() {
+		const API = "https://games-explorer.onrender.com/games";
+		const res = await axios.get(API);
+		const data = res.data;
+		let yearArray = data.map((game) => game.year);
+		setYears([...new Set(yearArray)]);
+	}
 	//games?year=1995
 	return (
 		<div className="App">
 			<h1>Game Explorer</h1>
 			<div className="btn-container">
-				<Button endpoint="games?year=1983" btnText="1983" getGames={getGames} />
-				<Button endpoint="games?year=1986" btnText="1986" getGames={getGames} />
-				<Button endpoint="games?year=1991" btnText="1991" getGames={getGames} />
-				<Button endpoint="games?year=1994" btnText="1994" getGames={getGames} />
-				<Button endpoint="games?year=1995" btnText="1995" getGames={getGames} />
+				{years.map((year) => (
+					<Button
+						endpoint={`games?year=${year}`}
+						btnText={year}
+						getGames={getGames}
+					/>
+				))}
 				<Button endpoint="random" btnText="Random" getGames={getGames} />
 			</div>
 			{games.map((game, idx) => {
