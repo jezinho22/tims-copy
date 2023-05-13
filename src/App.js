@@ -1,25 +1,37 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import axios from "axios";
+import { useState } from "react";
+import Button from "./Button";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+	const [games, setGames] = useState([]);
+
+	async function getGames(endpoint) {
+		const API = `https://games-explorer.onrender.com/${endpoint}`;
+		const res = await axios.get(API);
+		setGames(res.data);
+	}
+	//games?year=1995
+	return (
+		<div className="App">
+			<h1>Game Explorer</h1>
+			<div className="btn-container">
+				<Button endpoint="games?year=1983" btnText="1983" getGames={getGames} />
+				<Button endpoint="games?year=1986" btnText="1986" getGames={getGames} />
+				<Button endpoint="games?year=1991" btnText="1991" getGames={getGames} />
+				<Button endpoint="games?year=1994" btnText="1994" getGames={getGames} />
+				<Button endpoint="games?year=1995" btnText="1995" getGames={getGames} />
+				<Button endpoint="random" btnText="Random" getGames={getGames} />
+			</div>
+			{games.map((game, idx) => {
+				return (
+					<p key={idx}>
+						{game.name} - {game.year}
+					</p>
+				);
+			})}
+		</div>
+	);
 }
 
 export default App;
